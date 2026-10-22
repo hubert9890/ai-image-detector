@@ -25,6 +25,8 @@ services:
       context: ./detector
     expose:
       - "5000"
+    ports:
+      - "5000:5000"
     restart: unless-stopped
 
   db:
@@ -34,6 +36,9 @@ services:
       MARIADB_USER: ${MYSQL_USER}
       MARIADB_PASSWORD: ${MYSQL_PASSWORD}
       MARIADB_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+    ports:
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro

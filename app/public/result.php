@@ -38,7 +38,7 @@ $mimeType = $finfo->file($file['tmp_name']);
 $allowedMimeTypes = [
 	'image/jpeg' => 'jpg',
 	'image/jpg' => 'jpg',
-    	'image/png' => 'png',
+    'image/png' => 'png',
 	'image/webp' => 'webp',
 ];
 

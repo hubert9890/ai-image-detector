@@ -3,6 +3,9 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV HF_HOME=/models/huggingface \
+    TRANSFORMERS_CACHE=/models/huggingface \
+    HF_HUB_DISABLE_TELEMETRY=1
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -13,22 +16,29 @@ RUN apt-get update && \
         zlib1g-dev \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
+    
+RUN pip3 install \
+        --no-cache-dir \
+        --break-system-packages \
+        torch \
+        --index-url https://download.pytorch.org/whl/cpu
+
+RUN pip3 install \
+        --no-cache-dir \
+        --break-system-packages \
+        transformers \
+        huggingface_hub \
+        accelerate \
+        safetensors \
+        fastapi \
+        "uvicorn[standard]" \
+        python-multipart \
+        pillow
 
 WORKDIR /app
 
 COPY requirements.txt .
+COPY . /app
 
-RUN python3 -m venv /opt/venv && \
-    /opt/venv/bin/pip install --no-cache-dir --upgrade pip && \
-    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
-
-COPY main.py .
-
-RUN useradd --create-home --shell /usr/sbin/nologin protector
-
-USER protector
-
-EXPOSE 5000
-
-CMD ["/opt/venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
 

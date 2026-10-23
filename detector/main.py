@@ -1,6 +1,5 @@
 from io import BytesIO
 
-import torch
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image, UnidentifiedImageError
 from transformers import pipeline
@@ -17,9 +16,8 @@ pipez = pipeline(
 def health():
     return {"status": "ok"}
 
-
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
+async def predict(file: UploadFile = File(...)):  # noqa: B008
     allowed_types = {
         "image/jpeg",
         "image/png",
@@ -43,13 +41,20 @@ async def predict(file: UploadFile = File(...)):
         )
 
     try:
-        image = Image.open(BytesIO(data)).convert("RGB")
-        image.verify()
-    except UnidentifiedImageError:
+        with Image.open(BytesIO(data)) as image:
+            image.verify()
+        with Image.open(BytesIO(data)) as image:
+            rgb_image = image.convert("RGB")
+    except (
+        UnidentifiedImageError,
+        OSError
+    ):
         raise HTTPException(
             status_code=400, 
             detail="Invalid image."
         )
         
-    result = pipez(image)
-    print (result)
+    result = pipez(rgb_image)
+
+    print(result)
+    return result

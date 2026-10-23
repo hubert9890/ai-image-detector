@@ -15,15 +15,17 @@ declare(strict_types=1);
             display: flex;             
             justify-content: center;   
             align-items: center;       
-            background-color: ##FFFDD0;
+            background-color: #FFFDD0;
         }
         h1{
             text-align: center;
         }
-        .container{
+        .container {
             display: flex;
-            justify-content: center; 
-            align-items: center;    
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
         }
     </style>
 </head>
